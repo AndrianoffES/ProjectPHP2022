@@ -2,77 +2,92 @@
 
 namespace project\App\Blog;
 
-use project\App\Users\User;
-
 class Comment
 {
-     private int $id;
-     private Post $text;
-     private User $user;
-     private string $comment;
+     private UUID $uuid;
+     private Post $postUUID;
+     private Post $authorUUID;
+     private string $text;
 
      public function __construct(
-         int $id,
-         Post $text,
-         User $user,
+         UUID $uuid,
+         Post $postUUID,
+         Post $authorUUID,
          string $comment
      )
      {
-         $this->id=$id;
-         $this->user=$user;
-         $this->text=$text;
-         $this->comment=$comment;
+         $this->uuid=$uuid;
+         $this->postUUID=$postUUID;
+         $this->authorUUID=$authorUUID;
+         $this->text=$comment;
      }
 
     /**
-     * @return int
+     * @return UUID
      */
-    public function getId(): int
+    public function getUuid(): UUID
     {
-        return $this->id;
+        return $this->uuid;
     }
 
     /**
-     * @param int $id
+     * @param UUID $uuid
      */
-    public function setId(int $id): void
+    public function setUuid(UUID $uuid): void
     {
-        $this->id = $id;
+        $this->uuid = $uuid;
     }
 
     /**
      * @return Post
      */
-    public function getText(): Post
+    public function getPostUUID(): Post
+    {
+        return $this->postUUID;
+    }
+
+    /**
+     * @param Post $postUUID
+     */
+    public function setPostUUID(Post $postUUID): void
+    {
+        $this->postUUID = $postUUID;
+    }
+
+    /**
+     * @return Post
+     */
+    public function getAuthorUUID(): Post
+    {
+        return $this->authorUUID;
+    }
+
+    /**
+     * @param Post $authorUUID
+     */
+    public function setAuthorUUID(Post $authorUUID): void
+    {
+        $this->authorUUID = $authorUUID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getText(): string
     {
         return $this->text;
     }
 
     /**
-     * @param Post $text
+     * @param string $text
      */
-    public function setText(Post $text): void
+    public function setText(string $text): void
     {
         $this->text = $text;
     }
 
-    /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function setUser(User $user): void
-    {
-        $this->user = $user;
-    }
 
     public function __toString(){
-        return $this->user . 'commenting' . $this->text . 'and speaking' . $this->comment;
+        return 'author with id ' . $this->authorUUID . 'commenting post with id ' . $this->postUUID . 'and speaking' . $this->text;
     }
 }

@@ -17,16 +17,16 @@ class SqliteUsersRepository implements UsersRepositoryInterface
     }
     public function save(User $user): void {
         // Подготавливаем запрос
-        $statement = $this->connection->prepare( 'INSERT INTO users (first_name, last_name, uuid, username)
+        $statement = $this->connection->prepare( 'INSERT INTO users (uuid, first_name, last_name, username)
 VALUES (:first_name, :last_name, :uuid, :username)'
         );
         // Выполняем запрос с конкретными значениями
        //var_dump($user = $user->getName());
 
         $statement->execute([
+            ':uuid'=> $user->uuid(),
             ':first_name' => $user->getName()->getFirstName(),
             ':last_name' => $user->getName()->getLastName(),
-            ':uuid'=> $user->uuid(),
             ':username'=>$user->getLogin()
         ]);
     }
@@ -52,13 +52,25 @@ VALUES (:first_name, :last_name, :uuid, :username)'
      * @throws UserNotFoundException
      */
     public function getByUsername(string $username): User
+    {   // var_dump($username);
+        $statement = $this->connection->prepare(
+            'SELECT * FROM users WHERE username = :username');
+        $statement->execute([
+            ':username'=> (string)$username
+        ]);//var_dump($this->getUser($statement, $username));
+       return $this->getUser($statement, $username);
+    }
+
+    public function getUuidByUsername(string $username): User
     {
         $statement = $this->connection->prepare(
             'SELECT * FROM users WHERE username = :username');
         $statement->execute([
             ':username'=> (string)$username
         ]);
-       return $this->getUser($statement, $username);
+     // $result =  $statement->fetch(PDO::FETCH_ASSOC);
+      var_dump($username);
+        return $this->getUser($statement, $username);
     }
 
     /**
@@ -67,6 +79,7 @@ VALUES (:first_name, :last_name, :uuid, :username)'
     private function getUser(\PDOStatement $statement, string $errorString): User
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
+     // var_dump($result);
         if ($result === false){
             throw new UserNotFoundException("Cannot find user:$errorString");
         }
