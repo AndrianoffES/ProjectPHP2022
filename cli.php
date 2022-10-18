@@ -1,7 +1,9 @@
 <?php
 
 use project\App\Blog\Command\Arguments;
+use project\App\Blog\Command\CreatePostCommand;
 use project\App\Blog\Command\CreateUserCommand;
+use project\App\Blog\Repositories\PostsRepository\SqlitePostsRepository;
 use project\App\Blog\UUID;
 use project\App\Users\Name;
 use project\App\Blog\Post;
@@ -22,10 +24,27 @@ try {
 } catch (Exception $e) {
     echo $e->getMessage();
 }
-**/
+
 $command = new CreateUserCommand($usersRepository);
 try {
     $command->handle(Arguments::fromArgv($argv));
 } catch (Exception $e) {
     echo $e->getMessage();
+}
+
+$user = $usersRepository->getByUsername('admin');
+echo $post = new Post(
+    UUID::random(),
+    $user->uuid(),
+    'hot news',
+    'some news'
+);
+ **/
+
+$postRepo = new SqlitePostsRepository($connection);
+$command = new CreatePostCommand($postRepo,$usersRepository);
+try {
+    $command->handle(Arguments::fromArgv($argv));
+} catch (Exception $e){
+    echo  $e->getMessage();
 }

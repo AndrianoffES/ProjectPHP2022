@@ -6,37 +6,72 @@ namespace project\App\Blog;
 use project\App\Users\Name;
 use project\App\Users\User;
 class Post{
-    private int $id;
-    private User $user;
+    private UUID $uuid;
+    private string $authorUUID;
+    private string $title;
     private string $text;
 
     public function __construct(
-        int    $id,
-        User   $user,
+        UUID    $uuid,
+        string   $authorUUID,
+        string $title,
         string $text
 
     )
     {
-        $this->id=$id;
+        $this->uuid=$uuid;
         $this->text=$text;
-        $this->user=$user;
+        $this->authorUUID=$authorUUID;
+        $this->title=$title;
 
     }
 
     /**
-     * @return mixed
+     * @return UUID
      */
-    public function getId()
+    public function getPostUuid(): UUID
     {
-        return $this->id;
+        return $this->uuid;
     }
 
     /**
-     * @return Name
+     * @param UUID $uuid
      */
-    public function getUser(): User
+    public function setUuid(UUID $uuid): void
     {
-        return $this->user;
+        $this->uuid = $uuid;
+    }
+
+    /**
+     * @return User
+     */
+    public function getAuthorUUID(): string
+    {
+        return $this->authorUUID;
+    }
+
+    /**
+     * @param User $authorUUID
+     */
+    public function setAuthorUUID(User $authorUUID): void
+    {
+        $this->authorUUID = $authorUUID;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
     }
 
     /**
@@ -45,22 +80,6 @@ class Post{
     public function getText(): string
     {
         return $this->text;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @param Name $user
-     */
-    public function setUser(User $user): void
-    {
-        $this->user = $user;
     }
 
     /**
@@ -73,9 +92,11 @@ class Post{
 
 
 
+
+
     public function __toString()
     {
-        return $this->user . 'writing ' . $this->text;
+        return 'the author with id ' . $this->authorUUID . ' writing title: "' . $this->title . '" and body of post: "' . $this->text . '"';
     }
 
 }

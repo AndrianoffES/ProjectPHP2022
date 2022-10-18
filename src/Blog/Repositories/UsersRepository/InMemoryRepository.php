@@ -22,7 +22,7 @@ class InMemoryRepository implements UsersRepositoryInterface
     public function get(UUID $uuid): User
     {
         foreach ($this->users as $user){
-            if($user->id() === $uuid){
+            if($user->uuid() === $uuid){
                 return $user;
             }
         }
