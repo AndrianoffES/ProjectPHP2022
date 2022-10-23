@@ -2,17 +2,19 @@
 
 namespace project\App\Blog;
 
+use project\App\Users\User;
+
 class Comment
 {
      private UUID $uuid;
      private Post $postUUID;
-     private Post $authorUUID;
+     private User $authorUUID;
      private string $text;
 
      public function __construct(
          UUID $uuid,
          Post $postUUID,
-         Post $authorUUID,
+         User $authorUUID,
          string $comment
      )
      {
@@ -57,7 +59,7 @@ class Comment
     /**
      * @return Post
      */
-    public function getAuthorUUID(): Post
+    public function getAuthorUUID(): User
     {
         return $this->authorUUID;
     }

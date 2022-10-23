@@ -3,17 +3,17 @@
 namespace project\App\Blog;
 
 
-use project\App\Users\Name;
+use project\App\Blog\UUID;
 use project\App\Users\User;
 class Post{
     private UUID $uuid;
-    private string $authorUUID;
+    private User $user;
     private string $title;
     private string $text;
 
     public function __construct(
         UUID    $uuid,
-        string   $authorUUID,
+        User   $user,
         string $title,
         string $text
 
@@ -21,7 +21,7 @@ class Post{
     {
         $this->uuid=$uuid;
         $this->text=$text;
-        $this->authorUUID=$authorUUID;
+        $this->user=$user;
         $this->title=$title;
 
     }
@@ -29,7 +29,7 @@ class Post{
     /**
      * @return UUID
      */
-    public function getPostUuid(): UUID
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
@@ -45,9 +45,9 @@ class Post{
     /**
      * @return User
      */
-    public function getAuthorUUID(): string
+    public function getUser(): User
     {
-        return $this->authorUUID;
+        return $this->user;
     }
 
     /**
