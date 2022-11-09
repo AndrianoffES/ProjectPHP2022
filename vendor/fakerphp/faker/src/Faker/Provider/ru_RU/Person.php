@@ -2,7 +2,7 @@
 
 namespace Faker\Provider\ru_RU;
 
-class Name extends \Faker\Provider\Person
+class Person extends \Faker\Provider\Person
 {
     protected static $maleNameFormats = [
         '{{firstNameMale}} {{middleNameMale}} {{lastName}}',
@@ -139,7 +139,7 @@ class Name extends \Faker\Provider\Person
      *
      * @return string Middle name
      */
-    public function middleName(string $gender = null): string
+    public function middleName($gender = null)
     {
         if ($gender === static::GENDER_MALE) {
             return $this->middleNameMale();

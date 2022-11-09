@@ -108,7 +108,7 @@ class Person extends \Faker\Provider\Person
      *
      * @example 1111111111118
      *
-     * @param string|null $gender      Name::GENDER_MALE or Name::GENDER_FEMALE
+     * @param string|null $gender      Person::GENDER_MALE or Person::GENDER_FEMALE
      * @param string|null $dateOfBirth (1800-2099) 'Y-m-d', 'Y-m', 'Y'  I.E. '1981-06-16', '2085-03', '1900'
      * @param string|null $county      county code where the CNP was issued
      * @param bool|null   $isResident  flag if the person resides in Romania
@@ -122,7 +122,7 @@ class Person extends \Faker\Provider\Person
         if (empty($gender)) {
             $gender = static::randomElement($genders);
         } elseif (!in_array($gender, $genders, false)) {
-            throw new \InvalidArgumentException("Gender must be '{Name::GENDER_MALE}' or '{Name::GENDER_FEMALE}'");
+            throw new \InvalidArgumentException("Gender must be '{Person::GENDER_MALE}' or '{Person::GENDER_FEMALE}'");
         }
 
         $date = $this->getDateOfBirth($dateOfBirth);

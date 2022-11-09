@@ -26,7 +26,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../fakerphp/faker',
             'aliases' => array(),
-            'dev_requirement' => false,
+            'dev_requirement' => true,
         ),
         'ivanandrianoff/project' => array(
             'pretty_version' => '1.0.0+no-version-set',
@@ -74,9 +74,9 @@
             'dev_requirement' => true,
         ),
         'phpunit/php-code-coverage' => array(
-            'pretty_version' => '9.2.17',
-            'version' => '9.2.17.0',
-            'reference' => 'aa94dc41e8661fe90c7316849907cba3007b10d8',
+            'pretty_version' => '9.2.18',
+            'version' => '9.2.18.0',
+            'reference' => '12fddc491826940cf9b7e88ad9664cf51f0f6d0a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/php-code-coverage',
             'aliases' => array(),
@@ -119,9 +119,9 @@
             'dev_requirement' => true,
         ),
         'phpunit/phpunit' => array(
-            'pretty_version' => '9.5.25',
-            'version' => '9.5.25.0',
-            'reference' => '3e6f90ca7e3d02025b1d147bd8d4a89fd4ca8a1d',
+            'pretty_version' => '9.5.26',
+            'version' => '9.5.26.0',
+            'reference' => '851867efcbb6a1b992ec515c71cdcf20d895e9d2',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpunit/phpunit',
             'aliases' => array(),
@@ -134,7 +134,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../psr/container',
             'aliases' => array(),
-            'dev_requirement' => false,
+            'dev_requirement' => true,
         ),
         'sebastian/cli-parser' => array(
             'pretty_version' => '1.0.1',
@@ -287,7 +287,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/deprecation-contracts',
             'aliases' => array(),
-            'dev_requirement' => false,
+            'dev_requirement' => true,
         ),
         'symfony/polyfill-uuid' => array(
             'pretty_version' => 'v1.26.0',

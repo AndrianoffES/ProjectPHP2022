@@ -218,7 +218,7 @@ return array(
     'PHPUnit\\TextUI\\CliArguments\\Configuration' => $vendorDir . '/phpunit/phpunit/src/TextUI/CliArguments/Configuration.php',
     'PHPUnit\\TextUI\\CliArguments\\Exception' => $vendorDir . '/phpunit/phpunit/src/TextUI/CliArguments/Exception.php',
     'PHPUnit\\TextUI\\CliArguments\\Mapper' => $vendorDir . '/phpunit/phpunit/src/TextUI/CliArguments/Mapper.php',
-    'PHPUnit\\TextUI\\Command' => $vendorDir . '/phpunit/phpunit/src/TextUI/Commands.php',
+    'PHPUnit\\TextUI\\Command' => $vendorDir . '/phpunit/phpunit/src/TextUI/Command.php',
     'PHPUnit\\TextUI\\DefaultResultPrinter' => $vendorDir . '/phpunit/phpunit/src/TextUI/DefaultResultPrinter.php',
     'PHPUnit\\TextUI\\Exception' => $vendorDir . '/phpunit/phpunit/src/TextUI/Exception/Exception.php',
     'PHPUnit\\TextUI\\Help' => $vendorDir . '/phpunit/phpunit/src/TextUI/Help.php',

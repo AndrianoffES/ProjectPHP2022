@@ -1,6 +1,6 @@
 <?php
 
-namespace project\App\Blog\UnitTests\Repositories;
+namespace Repositories;
 
 use PDO;
 use PDOStatement;
@@ -66,7 +66,10 @@ class SqlitePostsRepositoriesTest extends TestCase
             ]);
         $connectionMok->method('prepare')->willReturn($statementMock);
         $repo = new SqlitePostsRepository($connectionMok);
-        $user = new User( new UUID('123e4567-e85b-12d3-a456-416618174000'), new Name('Ivan', 'Ivanov'), 'Ivanov11');
+        $user = new User(
+                new UUID('123e4567-e85b-12d3-a456-416618174000'),
+                new Name('Ivan', 'Ivanov'),
+                'Ivanov11');
         $repo->save(
             new Post(
                 new UUID('123e4567-e89b-12d3-a456-426614174000'),

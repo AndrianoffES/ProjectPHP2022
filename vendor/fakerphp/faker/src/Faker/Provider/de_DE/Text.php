@@ -323,7 +323,7 @@ fragte sie, ob sie Mutter von den Kindern wäre? Sie bejahte es, und indem sie d
 mütterlichen Liebe.—"ich habe", sagte sie, "meinem Philipps das Kleine zu halten
 gegeben und bin mit meinem Ältesten in die Stadt gegangen, um weiß Brot zu holen
 und Zucker und ein irden Breipfännchen".—Ich sah das alles in dem Korbe,
-dessen Deckel abgefallen war.—"Ich will meinem Hans (das war der User des
+dessen Deckel abgefallen war.—"Ich will meinem Hans (das war der Name des
 Jüngsten) ein Süppchen kochen zum Abende; der lose Vogel, der Große, hat mir gestern
 das Pfännchen zerbrochen, als er sich mit Philippsen um die Scharre des Breis
 zankte".—ich fragte nach dem Ältesten, und sie hatte mir kaum gesagt, daß er sich auf

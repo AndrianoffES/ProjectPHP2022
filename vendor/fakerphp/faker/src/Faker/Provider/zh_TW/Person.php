@@ -166,7 +166,7 @@ class Person extends \Faker\Provider\Person
     }
 
     /**
-     * @param string $gender Name::GENDER_MALE || Name::GENDER_FEMALE
+     * @param string $gender Person::GENDER_MALE || Person::GENDER_FEMALE
      *
      * @see https://en.wikipedia.org/wiki/National_Identification_Card_(Republic_of_China)
      *

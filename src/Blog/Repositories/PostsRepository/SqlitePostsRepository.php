@@ -67,4 +67,11 @@ VALUES (:uuid, :author, :title, :text)'
             $result['text']
         );
      }
+
+     public function delete(string $postUuid): int
+     {
+            $statement = $this->connection->prepare('DELETE FROM posts WHERE uuid = ? ');
+            $statement->execute([(string)$postUuid]);
+            return $statement->rowCount();
+     }
 }

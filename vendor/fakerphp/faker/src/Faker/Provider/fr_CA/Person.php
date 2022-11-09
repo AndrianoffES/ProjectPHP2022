@@ -25,7 +25,7 @@ class Person extends \Faker\Provider\Person
     ];
 
     /**
-     * This list is more or less the same as in \Faker\Provider\fr_FR\Name.php
+     * This list is more or less the same as in \Faker\Provider\fr_FR\Person.php
      * Some common names were added and other removed.
      */
     protected static $firstNameMale = [

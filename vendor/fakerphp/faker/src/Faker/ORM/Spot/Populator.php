@@ -26,7 +26,7 @@ class Populator
     /**
      * Add an order for the generation of $number records for $entity.
      *
-     * @param string $entityName             User of Entity object to generate
+     * @param string $entityName             Name of Entity object to generate
      * @param int    $number                 The number of entities to populate
      * @param array  $customColumnFormatters
      * @param array  $customModifiers
