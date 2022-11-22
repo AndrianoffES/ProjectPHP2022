@@ -1,6 +1,6 @@
 <?php
 
-namespace Action;
+namespace App\Blog\Unittests;
 
 use PDO;
 use PDOStatement;
@@ -19,7 +19,7 @@ use project\App\Users\Name;
 use project\App\Users\User;
 
 
-class CreatePostTest extends TestCase
+class CreatePostActionTest extends TestCase
 {
     /**
      * @runInSeparateProcess

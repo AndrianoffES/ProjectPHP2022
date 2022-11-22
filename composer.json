@@ -5,6 +5,11 @@
             "project\\App\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Blog\\UnitTests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Andrianoff",

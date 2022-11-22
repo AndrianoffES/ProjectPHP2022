@@ -25,6 +25,7 @@ class DeletePost implements ActionInterface
     {
        try{
            $postUuid = new UUID($request->query('uuid'));
+           $this->postsRepository->get(new UUID($postUuid));
        }catch (HttpException | InvalidArgumentException $e){
            return new ErrorResponse($e->getMessage());
        }

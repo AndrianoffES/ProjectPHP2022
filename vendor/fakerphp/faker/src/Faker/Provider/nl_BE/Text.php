@@ -12061,7 +12061,7 @@ ontsnapten, behalve de heer Bausart d'Armentières, die gevat werd. De
 heer Bausart moest het voor de anderen wreedelijk bekoopen.
 
 En 't was een lafhertige verrader uit het regiment van den heer van
-Likes, die hen allen had aangeklaagd.
+LikesRepository, die hen allen had aangeklaagd.
 
 Met een hert, dat klopte van angst, ging Uilenspiegel te Brussel naar
 de Peerdenmarkt, den ijselijken folterdood bijwonen.

@@ -96,7 +96,7 @@ class Post{
 
     public function __toString()
     {
-        return 'the author with id ' . $this->authorUUID . ' writing title: "' . $this->title . '" and body of post: "' . $this->text . '"';
+        return 'the author with id ' . $this->user . ' writing title: "' . $this->title . '" and body of post: "' . $this->text . '"';
     }
 
 }
