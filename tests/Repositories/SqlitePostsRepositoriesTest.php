@@ -1,14 +1,14 @@
 <?php
 
-namespace Repositories;
+namespace App\Blog\UnitTests\Repositories;
 
+use App\Blog\UnitTests\DummyLogger;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
 use project\App\Blog\Exceptions\PostNotFoundException;
 use project\App\Blog\Post;
 use project\App\Blog\Repositories\PostsRepository\SqlitePostsRepository;
-use project\App\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 use project\App\Blog\UUID;
 use project\App\Users\Name;
 use project\App\Users\User;
@@ -21,13 +21,16 @@ class SqlitePostsRepositoriesTest extends TestCase
         $statementStub->method('fetch')->willReturn(false);
         $connectionMock->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqlitePostsRepository($connectionMock);
+        $repository = new SqlitePostsRepository($connectionMock, new DummyLogger());
         $this->expectException(PostNotFoundException::class);
         $this->expectExceptionMessage('cannot find post: 30ec7af1-7997-4c64-b921-e10121916c8d');
         $repository->get(new UUID('30ec7af1-7997-4c64-b921-e10121916c8d'));
 
     }
 
+    /**
+     * @throws PostNotFoundException
+     */
     public function testItGetPostByUuid():void{
         $connectionStub = $this->createStub(PDO::class);
         $statementPost = $this->createMock(PDOStatement::class);
@@ -46,7 +49,7 @@ class SqlitePostsRepositoriesTest extends TestCase
         ]);
 
         $connectionStub->method('prepare')->willReturn($statementPost, $statementUser);
-        $repo = new SqlitePostsRepository($connectionStub);
+        $repo = new SqlitePostsRepository($connectionStub, new DummyLogger());
 
         $post = $repo->get(new UUID('30ec7af1-7997-4c64-b921-e10121916c8d'));
 
@@ -65,7 +68,7 @@ class SqlitePostsRepositoriesTest extends TestCase
                 ':text' => 'text'
             ]);
         $connectionMok->method('prepare')->willReturn($statementMock);
-        $repo = new SqlitePostsRepository($connectionMok);
+        $repo = new SqlitePostsRepository($connectionMok, new DummyLogger());
         $user = new User(
                 new UUID('123e4567-e85b-12d3-a456-416618174000'),
                 new Name('Ivan', 'Ivanov'),

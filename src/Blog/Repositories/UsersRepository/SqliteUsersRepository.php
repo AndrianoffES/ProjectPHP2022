@@ -6,14 +6,17 @@ use project\App\Blog\UUID;
 use project\App\Users\Name;
 use project\App\Users\User;
 use project\App\Blog\Exceptions\UserNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class SqliteUsersRepository implements UsersRepositoryInterface
 {
-    private PDO $connection;
 
-    public function __construct(PDO $connection
+
+    public function __construct(
+      private  PDO $connection,
+      private  LoggerInterface $logger
     ){
-        $this->connection = $connection;
+
     }
     public function save(User $user): void {
 
@@ -21,19 +24,23 @@ class SqliteUsersRepository implements UsersRepositoryInterface
 VALUES (:uuid, :first_name, :last_name,  :username)'
         );
 
-
+        $uuid = $user->uuid();
         $statement->execute([
-            ':uuid'=> $user->uuid(),
+            ':uuid'=> $uuid,
             ':first_name' => $user->getName()->getFirstName(),
             ':last_name' => $user->getName()->getLastName(),
             ':username'=>$user->getLogin()
         ]);
+        $this->logger->info("User saved:$uuid");
     }
 
 
     public function get(UUID $uuid): User {
         $statement = $this->connection->prepare( 'SELECT * FROM users WHERE uuid = ?');
-        $statement->execute([(string)$uuid]);
+        $result = $statement->execute([(string)$uuid]);
+        if (!$result){
+            $this->logger->warning("Cannot find user:$uuid");
+        }
 
         return $this->getUser($statement, $uuid);
     }
@@ -47,9 +54,12 @@ VALUES (:uuid, :first_name, :last_name,  :username)'
     {
         $statement = $this->connection->prepare(
             'SELECT * FROM users WHERE username = :username');
-        $statement->execute([
+       $result = $statement->execute([
             ':username'=> $username
         ]);
+        if(!$result){
+            $this->logger->warning("Cannot find user:$username");
+        }
        return $this->getUser($statement, $username);
     }
 
@@ -57,12 +67,13 @@ VALUES (:uuid, :first_name, :last_name,  :username)'
     /**
      * @throws UserNotFoundException
      */
-    private function getUser(\PDOStatement $statement, string $errorString): User
+    private function getUser(\PDOStatement $statement, string $username): User
     {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (!$result){
-            throw new UserNotFoundException("Cannot find user: $errorString");
+            $this->logger->warning("Cannot find user: $username");
+            throw new UserNotFoundException("Cannot find user: $username");
         }
         return new User(
             new UUID($result['uuid']),

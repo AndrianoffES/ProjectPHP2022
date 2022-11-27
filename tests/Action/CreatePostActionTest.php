@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Blog\Unittests;
+namespace App\Blog\UnitTests\Action;
 
+use App\Blog\UnitTests\DummyLogger;
+use project\App\Blog\Exceptions\AuthException;
+use project\App\Blog\Exceptions\InvalidArgumentException;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
-use project\App\Blog\Exceptions\HttpException;
-use project\App\Blog\Exceptions\InvalidArgumentException;
 use project\App\Blog\Exceptions\UserNotFoundException;
 use project\App\Blog\Repositories\PostsRepository\SqlitePostsRepository;
 use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\UUID;
 use project\App\Http\Action\Posts\CreatePost;
+use project\App\Http\Auth\JsonBodyUuidIdentification;
 use project\App\Http\ErrorResponse;
 use project\App\Http\Request;
 use project\App\Http\SuccessfulResponse;
@@ -28,23 +30,26 @@ class CreatePostActionTest extends TestCase
     public function testItReturnSuccessfulResponse(){
 
         $request = new Request([], [],'{
-"author_uuid": "44630a56-fdee-4307-b3fc-f29c118a10f0",
-"title": "proverka",
- "text": "vipolnena"
-}');
+    "user_uuid": "44630a56-fdee-4307-b3fc-f29c118a10f0",
+    "title": "proverka",
+     "text": "vipolnena"
+    }'
+        );
         $userRepo = $this->usersRepository([new User(
             new UUID('44630a56-fdee-4307-b3fc-f29c118a10f0'),
             new Name('Anna','Mandis'),
             'anman'
         )]);
+        $identification = new JsonBodyUuidIdentification($userRepo);
+        $identification->user($request);
         $connectionMok = $this->createStub(PDO::class);
         $statementMock = $this->createMock(PDOStatement::class);
         $statementMock
             ->expects($this->once()) // Ожидаем, что будет вызван один раз
             ->method('execute') ;
         $connectionMok->method('prepare')->willReturn($statementMock);
-        $postRepo= new SqlitePostsRepository($connectionMok);
-        $action = new CreatePost($postRepo, $userRepo);
+        $postRepo= new SqlitePostsRepository($connectionMok, new DummyLogger());
+        $action = new CreatePost($postRepo, $identification, new DummyLogger());
 
         $response = $action->handle($request);
         // Проверяем, что ответ - удачный
@@ -56,28 +61,19 @@ class CreatePostActionTest extends TestCase
     }
 
     public function testItReturnErrorIfWrongUuid(){
-        /**
-         * @runInSeparateProcess
-         * @preserveGlobalState disabled
-         */
+
+
         $request = new Request([], [],'{
-"author_uuid": "44630a56-fdee-4307-b3fc-f29c118a10f",
-"title": "proverka",
- "text": "vipolnena"
-}');
+        "user_uuid": "44630a56-fdee-4307-b3fc-f29c118a10f",
+        "title": "proverka",
+         "text": "vipolnena"
+            }'
+        );
         $userRepo = $this->usersRepository([]);
-        $connectionMok = $this->createStub(PDO::class);
-
-        $postRepo= new SqlitePostsRepository($connectionMok);
-        $action = new CreatePost($postRepo, $userRepo);
-
-        $response = $action->handle($request);
-        $this->assertInstanceOf(ErrorResponse::class, $response);
-        $this->expectOutputString('{
-  "success": false,
-  "reason": "Malformed UUID: 44630a56-fdee-4307-b3fc-f29c118a100"
-}');
-
+        $this->expectException(AuthException::class);
+        $this->expectExceptionMessage('Malformed UUID: 44630a56-fdee-4307-b3fc-f29c118a10f');
+        $identification = new JsonBodyUuidIdentification($userRepo);
+        $identification->user($request);
 
     }
 

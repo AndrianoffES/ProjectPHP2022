@@ -2,36 +2,31 @@
 
 namespace project\App\Http\Action\Posts;
 
+use project\App\Http\Auth\IdentificationInterface;
 use project\App\Http\SuccessfulResponse;
 use project\App\Blog\Exceptions\HttpException;
 use project\App\Blog\Exceptions\InvalidArgumentException;
 use project\App\Blog\Exceptions\UserNotFoundException;
 use project\App\Blog\Post;
 use project\App\Blog\Repositories\PostsRepository\PostRepositoryInterface;
-use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\UUID;
 use project\App\Http\Action\ActionInterface;
 use project\App\Http\Request;
 use project\App\Http\Response;
 use project\App\Http\ErrorResponse;
+use Psr\Log\LoggerInterface;
 
 class CreatePost implements ActionInterface
 {
     public function __construct(
-        private PostRepositoryInterface $postsRepository, private UsersRepositoryInterface $usersRepository,){
+        private PostRepositoryInterface $postsRepository,
+        private IdentificationInterface $identification,
+        private LoggerInterface $logger
+    ){
     }
     public function handle(Request $request): Response{
-        // Пытаемся создать UUID пользователя из данных запроса
-        try {
-            $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
-        } catch (HttpException | InvalidArgumentException $e) {
-            return new ErrorResponse($e->getMessage());
-        }
-        // Пытаемся найти пользователя в репозитории
-        try {  $user = $this->usersRepository->get($authorUuid);
-        } catch (UserNotFoundException $e) {
-            return new ErrorResponse($e->getMessage());
-        }
+        $user = $this->identification->user($request);
+
         // Генерируем UUID для новой статьи
         $newPostUuid = UUID::random();
         try {
@@ -47,6 +42,7 @@ class CreatePost implements ActionInterface
         }
 
         $this->postsRepository->save($post);
+        $this->logger->info("Post created: $newPostUuid");
         return new SuccessfulResponse([
             'uuid' => (string)$newPostUuid, ]);
     }

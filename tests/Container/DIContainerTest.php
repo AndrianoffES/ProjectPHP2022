@@ -2,6 +2,7 @@
 
 namespace App\Blog\UnitTests\Container;
 
+
 use PHPUnit\Framework\TestCase;
 use project\App\Blog\Container\DIContainer;
 use project\App\Blog\Exceptions\NotFoundException;
@@ -87,6 +88,9 @@ SomeClassWithParameter::class,
         $container->get(SomeClass::class);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function testItResolvesClassWithoutDependencies(): void {
         // Создаём объект контейнера
         $container = new DIContainer();

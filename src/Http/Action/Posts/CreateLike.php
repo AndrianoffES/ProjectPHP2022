@@ -4,6 +4,7 @@ namespace project\App\Http\Action\Posts;
 
 use project\App\Blog\Exceptions\HttpException;
 use project\App\Blog\Exceptions\InvalidArgumentException;
+use project\App\Blog\Exceptions\LikeAlreadyExistException;
 use project\App\Blog\Exceptions\PostNotFoundException;
 use project\App\Blog\Exceptions\UserNotFoundException;
 use project\App\Blog\Likes;
@@ -55,6 +56,12 @@ class CreateLike implements ActionInterface
         }
 
 
+
+        try{
+        $this->likesRepository->checkIsExistLike($post,$user);
+        }catch (LikeAlreadyExistException $e){
+            return new ErrorResponse($e->getMessage());
+        }
         try{
             $like = new Likes(
                 $uuid = UUID::random(),
@@ -65,12 +72,6 @@ class CreateLike implements ActionInterface
         catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
-        try{
-        $this->likesRepository->checkIsExistLike($post,$user);
-        }catch (PostNotFoundException $e){
-            return new ErrorResponse($e->getMessage());
-        }
-
         $this->likesRepository->save($like);
         return new SuccessfulResponse([
             'uuid' => (string)$postUuid,]);

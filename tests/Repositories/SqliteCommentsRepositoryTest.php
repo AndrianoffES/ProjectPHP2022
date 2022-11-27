@@ -1,7 +1,8 @@
 <?php
 
-namespace project\Repositories;
+namespace App\Blog\UnitTests\Repositories;
 
+use App\Blog\UnitTests\DummyLogger;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +29,7 @@ class SqliteCommentsRepositoryTest extends TestCase
                 ':text' => 'text'
             ]);
         $connectionMok->method('prepare')->willReturn($statementMock);
-        $repo = new SqliteCommentsRepository($connectionMok);
+        $repo = new SqliteCommentsRepository($connectionMok, new DummyLogger());
         $user = new User(
                 new UUID('f8f30cb5-9599-49da-b4e1-6141943546f6'),
                 new Name('Ivan', 'Ivanov'), 'Ivanov11');
@@ -64,7 +65,7 @@ class SqliteCommentsRepositoryTest extends TestCase
 
 
          $connectionStub->method('prepare')->willReturn($statementComment);
-         $repo = new SqliteCommentsRepository($connectionStub);
+         $repo = new SqliteCommentsRepository($connectionStub, new DummyLogger());
          $comment = $repo->get(new UUID('7cb60dbe-3182-4a64-9ce2-3b5158ebe2d0'));
          $this->assertSame('7cb60dbe-3182-4a64-9ce2-3b5158ebe2d0', (string)$comment->getUuid());
     }
@@ -74,9 +75,9 @@ class SqliteCommentsRepositoryTest extends TestCase
         $statementStub->method('fetch')->willReturn(false);
         $connectionMock->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteCommentsRepository($connectionMock);
+        $repository = new SqliteCommentsRepository($connectionMock, new DummyLogger());
         $this->expectException(CommentNotFoundException::class);
-        $this->expectExceptionMessage('cannot find post: 30ec7af1-7997-4c64-b921-e10121916c8d');
+        $this->expectExceptionMessage('cannot find comment: 30ec7af1-7997-4c64-b921-e10121916c8d');
         $repository->get(new UUID('30ec7af1-7997-4c64-b921-e10121916c8d'));
     }
 }

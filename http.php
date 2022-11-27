@@ -1,8 +1,6 @@
 <?php
 
 use project\App\Blog\Exceptions\AppException;
-use project\App\Blog\Repositories\CommentsRepository\SqliteCommentsRepository;
-use project\App\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 use project\App\Http\Action\Posts\CreateComment;
 use project\App\Http\Action\Posts\CreateLike;
 use project\App\Http\Action\Posts\DeletePost;
@@ -12,10 +10,11 @@ use project\App\Http\ErrorResponse;
 use project\App\Http\Request;
 use project\App\Blog\Exceptions\HttpException;
 use project\App\Http\Action\Posts\CreatePost;
-use project\App\Blog\Repositories\PostsRepository\SqlitePostsRepository;
+use Psr\Log\LoggerInterface;
 
 
 $container = require __DIR__ . '/bootstrap.php';
+$logger = $container->get(LoggerInterface::class);
 
 
 $request = new Request(
@@ -25,17 +24,19 @@ $request = new Request(
 
 try {
     $path = $request->path();
-} catch (HttpException) {
-    (new ErrorResponse)->send();
+} catch (HttpException $e) {
+    $logger->warning($e->getMessage());
+    (new ErrorResponse($e->getMessage()))->send();
     return;
 }
 
 try {
 // Пытаемся получить HTTP-метод запроса
     $method = $request->method();
-} catch (HttpException) {
+} catch (HttpException $e) {
 // Возвращаем неудачный ответ,  если по какой-то причине  не можем получить метод
-    (new ErrorResponse)->send();
+    $logger->warning($e->getMessage());
+    (new ErrorResponse($e->getMessage()))->send();
     return;
 }
 
@@ -57,12 +58,12 @@ $routes = [
 ];
 
 
-if (!array_key_exists($method, $routes)) {
-    (new ErrorResponse("Rout not found: $method $path"))->send();
-    return; }
-
-if (!array_key_exists($path, $routes[$method])) {
-    (new ErrorResponse("Rout not found: $method $path"))->send();
+if (!array_key_exists($method, $routes)
+    || !array_key_exists($path, $routes[$method])) {
+    // Логируем сообщение с уровнем NOTICE
+    $message = "Route not found: $method $path";
+    $logger->notice($message);
+    (new ErrorResponse($message))->send();
     return;
 }
 
@@ -72,6 +73,7 @@ $action=$container->get($actionClassName);
 try {
     $response = $action->handle($request);
 } catch (AppException $e) {
+    $logger->error($e->getMessage(), ['exception' => $e]);
     (new ErrorResponse($e->getMessage()))->send();
 } $response->send();
 

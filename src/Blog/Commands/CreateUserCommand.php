@@ -9,11 +9,14 @@ use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\UUID;
 use project\App\Users\Name;
 use project\App\Users\User;
+use Psr\Log\LoggerInterface;
 
 class CreateUserCommand
 {
     public function __construct(
-        private UsersRepositoryInterface $usersRepository ){
+        private UsersRepositoryInterface $usersRepository,
+        private LoggerInterface $logger
+    ){
     }
 
     /**
@@ -21,20 +24,24 @@ class CreateUserCommand
      * @throws ArgumentsException
      */
     public function handle(Arguments $arguments): void {
+        $this->logger->info("Create user command started");
+
         $username = $arguments->get('username');
 
         // Проверяем, существует ли пользователь в репозитории
         if ($this->userExists($username)) {
 // Бросаем исключение, если пользователь уже существует
+            $this->logger->warning("User already exists: $username");
 throw new CommandException("User already exists: $username");
         }
-
+$uuid = UUID::random();
 // Сохраняем пользователя в репозиторий
 $this->usersRepository->save(new User(
-    UUID::random(),
+    $uuid,
     new Name($arguments->get('first_name'), $arguments->get('last_name')),
     $username
 ));
+        $this->logger->info("User created: $uuid");
 }
 
     private function userExists(string $username): bool {

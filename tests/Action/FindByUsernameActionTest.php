@@ -1,6 +1,6 @@
 <?php
 
-namespace Action;
+namespace App\Blog\UnitTests\Action;
 
 use PHPUnit\Framework\TestCase;
 use project\App\Blog\Exceptions\UserNotFoundException;

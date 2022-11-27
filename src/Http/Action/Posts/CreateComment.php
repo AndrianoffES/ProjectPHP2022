@@ -7,7 +7,7 @@ use project\App\Blog\Exceptions\HttpException;
 use project\App\Blog\Exceptions\InvalidArgumentException;
 use project\App\Blog\Exceptions\PostNotFoundException;
 use project\App\Blog\Exceptions\UserNotFoundException;
-use project\App\Blog\Repositories\CommentsRepository\CommentsRepositiryInterface;
+use project\App\Blog\Repositories\CommentsRepository\CommentsRepositoryInterface;
 use project\App\Blog\Repositories\PostsRepository\PostRepositoryInterface;
 use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\UUID;
@@ -22,7 +22,7 @@ class CreateComment implements ActionInterface
     public function __construct(
         private PostRepositoryInterface $postsRepository,
         private UsersRepositoryInterface $usersRepository,
-        private CommentsRepositiryInterface $commentsRepository
+        private CommentsRepositoryInterface $commentsRepository
     ){
     }
     /**

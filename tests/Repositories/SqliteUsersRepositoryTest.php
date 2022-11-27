@@ -1,7 +1,8 @@
 <?php
 
-namespace project\App\Blog\UnitTests\Repositories;
+namespace App\Blog\UnitTests\Action\Repositories;
 
+use App\Blog\UnitTests\DummyLogger;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +22,7 @@ class SqliteUsersRepositoryTest extends TestCase
         $statementStub->method('fetch')->willReturn(false);
         $connectionMock->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteUsersRepository($connectionMock);
+        $repository = new SqliteUsersRepository($connectionMock, new DummyLogger());
         $this->expectException(UserNotFoundException::class);
         $this->expectExceptionMessage('Cannot find user: Ivan');
         $repository->getByUserName('Ivan');
@@ -47,7 +48,8 @@ class SqliteUsersRepositoryTest extends TestCase
 // 3. При вызове метода prepare стаб подключения возвращает мок запроса
     $connectionStub->method('prepare')->willReturn($statementMock);
         // 1. Передаём в репозиторий стаб подключения
-        $repository = new SqliteUsersRepository($connectionStub);
+
+        $repository = new SqliteUsersRepository($connectionStub, new DummyLogger());
         // Вызываем метод сохранения пользователя
         $repository->save(
             new User( // Свойства пользователя точно такие,
@@ -62,6 +64,7 @@ class SqliteUsersRepositoryTest extends TestCase
     public function testItGetUserByUsername():void{
         $connectionStub = $this->createStub(PDO::class);
         $statementUser = $this->createMock(PDOStatement::class);
+
         $statementUser->method('fetch')->willReturn([
             'uuid'=> '30ec7af1-7997-4c64-b921-e10121916c8d',
             'first_name' => 'Ivan',
@@ -69,7 +72,7 @@ class SqliteUsersRepositoryTest extends TestCase
             'username' => 'ivan123',
         ]);
         $connectionStub->method('prepare')->willReturn($statementUser);
-        $repo = new SqliteUsersRepository($connectionStub);
+        $repo = new SqliteUsersRepository($connectionStub, new DummyLogger());
         $user = $repo->getByUsername('ivan123');
         $this->assertSame('30ec7af1-7997-4c64-b921-e10121916c8d', (string)$user->uuid());
 

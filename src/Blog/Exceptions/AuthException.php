@@ -2,7 +2,7 @@
 
 namespace project\App\Blog\Exceptions;
 
-class PostNotFoundException extends AppException
+class AuthException extends AppException
 {
 
 }

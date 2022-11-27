@@ -7,39 +7,47 @@ use PDO;
 use project\App\Blog\Exceptions\CommentNotFoundException;
 use project\App\Blog\Exceptions\LikeAlreadyExistException;
 use project\App\Blog\Exceptions\LikesNotFoundException;
+use project\App\Blog\Exceptions\PostNotFoundException;
 use project\App\Blog\Likes;
 use project\App\Blog\Post;
 use project\App\Blog\Repositories\PostsRepository\SqlitePostsRepository;
 use project\App\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 use project\App\Blog\UUID;
 use project\App\Users\User;
+use Psr\Log\LoggerInterface;
 
 class SqlLikesRepository implements LikesRepositoryInterface
 {
-    public function __construct(private PDO $connection)
+    public function __construct(
+        private PDO $connection,
+        private LoggerInterface $logger
+    )
     {
     }
 
     /**
      * @param Likes $likes
-     * @return mixed
+     * @return void
      */
     public function save(Likes $likes):void
     {
         $statement = $this->connection->prepare( 'INSERT INTO likes (uuid, post_uuid, user_uuid)
 VALUES (:uuid, :post_uuid, :user_uuid)'
         );
+        $uuid = $likes->getUuid();
         $statement->execute([
-            ':uuid' => $likes->getUuid(),
+            ':uuid' => $uuid,
             ':post_uuid' => $likes->getPostUuid()->getUuid(),
             ':user_uuid' => $likes->getUserUuid()->uuid()
         ]);
+        $this->logger->info("Like saved:$uuid");
     }
 
     /**
-     * @param UUID $uuid
+     * @param UUID $postUuid
      * @return mixed
      * @throws LikesNotFoundException
+     * @throws PostNotFoundException
      */
     public function getByTargetUuid(UUID $postUuid):array
     {
@@ -47,13 +55,14 @@ VALUES (:uuid, :post_uuid, :user_uuid)'
         $statement->execute([(string)$postUuid]);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         if($result === false){
-            throw new LikesNotFoundException("cannot find likes: $postUuid");
+            $this->logger->warning("Cannot find likes for post:$postUuid");
+            throw new LikesNotFoundException("cannot find likes for post: $postUuid");
         }
         $likes=[];
        foreach ($result as $item){
             $userRepo = new SqliteUsersRepository($this->connection);
             $user = $userRepo->get(new UUID($item['user_uuid']));
-            $postRepo = new SqlitePostsRepository($this->connection);
+            $postRepo = new SqlitePostsRepository($this->connection, $this->logger);
             $post = $postRepo->get(new UUID($item['post_uuid']));
             $likes[] = new Likes(
              uuid:  new UUID($item['uuid']),
