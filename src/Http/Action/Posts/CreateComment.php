@@ -3,26 +3,28 @@
 namespace project\App\Http\Action\Posts;
 
 use project\App\Blog\Comment;
+use project\App\Blog\Exceptions\AuthException;
 use project\App\Blog\Exceptions\HttpException;
 use project\App\Blog\Exceptions\InvalidArgumentException;
 use project\App\Blog\Exceptions\PostNotFoundException;
-use project\App\Blog\Exceptions\UserNotFoundException;
 use project\App\Blog\Repositories\CommentsRepository\CommentsRepositoryInterface;
 use project\App\Blog\Repositories\PostsRepository\PostRepositoryInterface;
-use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\UUID;
 use project\App\Http\Action\ActionInterface;
+use project\App\Http\Auth\TokenAuthenticationInterface;
 use project\App\Http\Request;
 use project\App\Http\Response;
 use project\App\Http\ErrorResponse;
 use project\App\Http\SuccessfulResponse;
+use Psr\Log\LoggerInterface;
 
 class CreateComment implements ActionInterface
 {
     public function __construct(
         private PostRepositoryInterface $postsRepository,
-        private UsersRepositoryInterface $usersRepository,
-        private CommentsRepositoryInterface $commentsRepository
+        private TokenAuthenticationInterface $authentication,
+        private CommentsRepositoryInterface $commentsRepository,
+        private LoggerInterface $logger
     ){
     }
     /**
@@ -31,7 +33,7 @@ class CreateComment implements ActionInterface
      */
     public function handle(Request $request): Response
     {
-        $newCommentUuid = UUID::random();
+
         try {
             $postUuid = new UUID($request->jsonBodyField('post_uuid'));
 
@@ -45,20 +47,16 @@ class CreateComment implements ActionInterface
             return new ErrorResponse($e->getMessage());
         }
         try {
-            $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
+            $user = $this->authentication->user($request);
 
 
-        } catch (HttpException|InvalidArgumentException $e) {
+        } catch (AuthException $e) {
             return new ErrorResponse($e->getMessage());
         }
-        try {
-            $user = $this->usersRepository->get($authorUuid);;
-        } catch (UserNotFoundException $e) {
-            return new ErrorResponse($e->getMessage());
-        }
+
         try {
 // Пытаемся создать объект статьи // из данных запроса
-            $comment = new Comment(
+    $comment = new Comment(
                 $postUuid,
                 $post,
                 $user,
@@ -67,8 +65,10 @@ class CreateComment implements ActionInterface
         } catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
+        $this->logger->info('Start saving comment');
         $this->commentsRepository->save($comment);
+        $this->logger->info('Comment saved' . $comment->getUuid());
         return new SuccessfulResponse([
-            'uuid' => (string)$postUuid,]);
+            'uuid' => (string)$comment->getUuid(),]);
     }
 }

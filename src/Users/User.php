@@ -2,31 +2,23 @@
 
 namespace project\App\Users;
 use DateTimeImmutable;
+use project\App\Blog\AuthToken;
 use project\App\Blog\UUID;
 use project\App\Users\Name;
 
-class User{
-    private UUID $uuid;
-    private Name $name;
-    private string $username;
 
-    /**
-     * @param UUID $uuid
-     * @param Name $name
-     * @param string $login
-     */
+class User{
 
     public function __construct(
-        UUID $uuid,
-        Name   $name,
-        string $login
-    )
-    {
-        $this->uuid=$uuid;
-        $this->name = $name;
-        $this->username = $login;
+    private UUID $uuid,
+    private Name $name,
+    private string $username,
+    private string $hashedPassword,
 
-    }
+    ){
+
+}
+
 
     /**
      * @return UUID
@@ -73,6 +65,34 @@ class User{
     public function __toString() : string
     {
         return "User $this->uuid with name $this->name and login $this->username" . PHP_EOL;
+    }
+
+    public function hashPassword(): string
+    {
+        return $this->hashedPassword;
+    }
+    private static function hash(UUID $uuid, string $password): string
+    {
+        return hash('sha256', $uuid . $password);
+    }
+    public function checkPassword(string $password): bool {
+        return $this->hashedPassword === self::hash($this->uuid,$password);
+    }
+
+    // Функция для создания нового пользователя
+    public static function createFrom(
+        Name $name,
+        string $username,
+        string $password,
+
+    ): self
+    {   $uuid = UUID::random();
+        return new self(
+            $uuid,
+            $name,
+            $username,
+            self::hash($uuid,$password),
+        );
     }
 
 

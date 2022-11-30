@@ -43,7 +43,8 @@ class SqliteUsersRepositoryTest extends TestCase
             ':uuid' => '123e4567-e89b-12d3-a456-426614174000',
             ':first_name' => 'Ivan',
             ':last_name' => 'Nikitin',
-             ':username' => 'ivan123'
+             ':username' => 'ivan123',
+             ':password'=>'123'
         ]);
 // 3. При вызове метода prepare стаб подключения возвращает мок запроса
     $connectionStub->method('prepare')->willReturn($statementMock);
@@ -56,7 +57,8 @@ class SqliteUsersRepositoryTest extends TestCase
             // как и в описании мока
                 new UUID('123e4567-e89b-12d3-a456-426614174000'),
                 new Name('Ivan', 'Nikitin'),
-                'ivan123'
+                'ivan123',
+                '123'
 
             ));
     }
@@ -70,6 +72,7 @@ class SqliteUsersRepositoryTest extends TestCase
             'first_name' => 'Ivan',
             'last_name' => 'Nikitin',
             'username' => 'ivan123',
+            'password'=>'123'
         ]);
         $connectionStub->method('prepare')->willReturn($statementUser);
         $repo = new SqliteUsersRepository($connectionStub, new DummyLogger());

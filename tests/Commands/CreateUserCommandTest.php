@@ -15,7 +15,19 @@ use project\App\Blog\UUID;
 use project\App\Users\User;
 
 class CreateUserCommandTest extends TestCase
+
 {
+    public function testItRequiresPassword(): void {
+        $command = new CreateUserCommand(
+            $this->makeUsersRepository(),
+            new DummyLogger()
+        );
+        $this->expectException(ArgumentsException::class);
+        $this->expectExceptionMessage('No such argument: password');
+        $command->handle(new Arguments([ 'username' => 'Ivan',
+        ])); }
+
+
     // Проверяем, что команда создания пользователя бросает исключение,
     // если пользователь с таким именем уже существует
     public function testItThrowsAnExceptionWhenUserAlreadyExists(): void {
@@ -28,7 +40,10 @@ class CreateUserCommandTest extends TestCase
         // и его сообщение
         $this->expectExceptionMessage('User already exists: Ivan');
         // Запускаем команду с аргументами
-        $command->handle(new Arguments(['username' => 'Ivan']));
+        $command->handle(new Arguments([
+            'username' => 'Ivan',
+            'password' => '123Ivan'
+        ]));
     }
 
 
@@ -54,6 +69,7 @@ class CreateUserCommandTest extends TestCase
         $this->expectExceptionMessage('No such argument: last_name');
         $command->handle(new Arguments([
             'username' => 'Ivan',
+            'password'=> '123Ivan',
         // Нам нужно передать имя пользователя,
         // чтобы дойти до проверки наличия фамилии
             'first_name' => 'Ivan',
@@ -65,7 +81,10 @@ class CreateUserCommandTest extends TestCase
         $command = new CreateUserCommand($this->makeUsersRepository(), new DummyLogger());
         $this->expectException(ArgumentsException::class);
         $this->expectExceptionMessage('No such argument: first_name');
-        $command->handle(new Arguments(['username' => 'Ivan']));
+        $command->handle(new Arguments([
+            'username' => 'Ivan',
+            'password' => '123Ivan'
+        ]));
     }
 
     // Тест, проверяющий, что команда сохраняет пользователя в репозитории
@@ -92,7 +111,10 @@ class CreateUserCommandTest extends TestCase
         // Передаём наш мок в команду
         $command = new CreateUserCommand($usersRepository, new DummyLogger());
         // Запускаем команду
-        $command->handle(new Arguments([ 'username' => 'Ivan', 'first_name' => 'Ivan', 'last_name' => 'Nikitin',
+        $command->handle(new Arguments([ 'username' => 'Ivan',
+            'first_name' => 'Ivan',
+            'last_name' => 'Nikitin',
+            'password'=>'123Ivan',
         ]));
 // Проверяем утверждение относительно мока,
 // а не утверждение относительно команды

@@ -3,6 +3,8 @@
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use project\App\Blog\Container\DIContainer;
+use project\App\Blog\Repositories\AuthTokensRepository\AuthTokensRepositoryInterface;
+use project\App\Blog\Repositories\AuthTokensRepository\SqliteAuthTokensRepository;
 use project\App\Blog\Repositories\CommentsRepository\SqliteCommentsRepository;
 use project\App\Blog\Repositories\LikesRepository\SqlLikesRepository;
 use project\App\Blog\Repositories\PostsRepository\PostRepositoryInterface;
@@ -11,9 +13,14 @@ use project\App\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\Repositories\LikesRepository\LikesRepositoryInterface;
 use project\App\Blog\Repositories\CommentsRepository\CommentsRepositoryInterface;
+use project\App\Http\Auth\AuthenticationInterface;
+use project\App\Http\Auth\BearerTokenAuthentication;
 use project\App\Http\Auth\IdentificationInterface;
 use project\App\Http\Auth\JsonBodyUserIdentification;
 use project\App\Http\Auth\JsonBodyUuidIdentification;
+use project\App\Http\Auth\PasswordAuthentication;
+use project\App\Http\Auth\PasswordAuthenticationInterface;
+use project\App\Http\Auth\TokenAuthenticationInterface;
 use Psr\Log\LoggerInterface;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -65,6 +72,21 @@ $container->bind(
     JsonBodyUserIdentification::class,
 
 );
+$container->bind(
+    AuthenticationInterface::class,
+    PasswordAuthentication::class
+);
 
+$container->bind(
+    PasswordAuthenticationInterface::class,
+    PasswordAuthentication::class
+);
+$container->bind(
+    AuthTokensRepositoryInterface::class,
+    SqliteAuthTokensRepository::class
+);
+$container->bind(
+    TokenAuthenticationInterface::class,
+    BearerTokenAuthentication::class);
 return $container;
 

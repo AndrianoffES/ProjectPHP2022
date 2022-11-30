@@ -1,6 +1,8 @@
 <?php
 
 use project\App\Blog\Exceptions\AppException;
+use project\App\Http\Action\LogIn;
+use project\App\Http\Action\LogOut;
 use project\App\Http\Action\Posts\CreateComment;
 use project\App\Http\Action\Posts\CreateLike;
 use project\App\Http\Action\Posts\DeletePost;
@@ -49,7 +51,9 @@ $routes = [
         '/users/create' =>  CreateUser :: class,
         '/post/create' =>  CreatePost :: class,
         '/comment/create' => CreateComment :: class,
-        '/post/likeCreate'=> CreateLike::class
+        '/login' => LogIn::class,
+        '/post/likeCreate'=> CreateLike::class,
+        '/logout'=> LogOut::class
         ],
     'DELETE'=>[
         '/posts'=>  DeletePost :: class

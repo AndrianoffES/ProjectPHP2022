@@ -2,7 +2,10 @@
 
 namespace project\App\Http\Action\Posts;
 
+use project\App\Blog\Exceptions\AuthException;
+use project\App\Http\Auth\AuthenticationInterface;
 use project\App\Http\Auth\IdentificationInterface;
+use project\App\Http\Auth\TokenAuthenticationInterface;
 use project\App\Http\SuccessfulResponse;
 use project\App\Blog\Exceptions\HttpException;
 use project\App\Blog\Exceptions\InvalidArgumentException;
@@ -20,17 +23,21 @@ class CreatePost implements ActionInterface
 {
     public function __construct(
         private PostRepositoryInterface $postsRepository,
-        private IdentificationInterface $identification,
+        private TokenAuthenticationInterface $authentication,
         private LoggerInterface $logger
     ){
     }
     public function handle(Request $request): Response{
-        $user = $this->identification->user($request);
-
-        // Генерируем UUID для новой статьи
+        try{
+            $user = $this->authentication->user($request);
+        }catch (AuthException $e) {
+            return new ErrorResponse($e->getMessage());
+        }
         $newPostUuid = UUID::random();
+        // Генерируем UUID для новой статьи
+
         try {
-// Пытаемся создать объект статьи // из данных запроса
+    // Пытаемся создать объект статьи из данных запроса
             $post = new Post(
                 $newPostUuid,
                 $user,

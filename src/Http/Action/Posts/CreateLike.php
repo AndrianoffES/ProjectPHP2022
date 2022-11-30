@@ -2,28 +2,30 @@
 
 namespace project\App\Http\Action\Posts;
 
+use project\App\Blog\Exceptions\AuthException;
 use project\App\Blog\Exceptions\HttpException;
 use project\App\Blog\Exceptions\InvalidArgumentException;
 use project\App\Blog\Exceptions\LikeAlreadyExistException;
 use project\App\Blog\Exceptions\PostNotFoundException;
-use project\App\Blog\Exceptions\UserNotFoundException;
 use project\App\Blog\Likes;
 use project\App\Blog\Repositories\LikesRepository\LikesRepositoryInterface;
 use project\App\Blog\Repositories\PostsRepository\PostRepositoryInterface;
-use project\App\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use project\App\Blog\UUID;
 use project\App\Http\Action\ActionInterface;
+use project\App\Http\Auth\TokenAuthenticationInterface;
 use project\App\Http\ErrorResponse;
 use project\App\Http\Request;
 use project\App\Http\Response;
 use project\App\Http\SuccessfulResponse;
+use Psr\Log\LoggerInterface;
 
 class CreateLike implements ActionInterface
 {
     public function __construct(
         private PostRepositoryInterface $postsRepository,
-        private UsersRepositoryInterface $usersRepository,
-        private LikesRepositoryInterface $likesRepository
+        private TokenAuthenticationInterface $authentication,
+        private LikesRepositoryInterface $likesRepository,
+        private LoggerInterface $logger
     ){
     }
     /**
@@ -44,14 +46,10 @@ class CreateLike implements ActionInterface
         } catch (PostNotFoundException $e) {
             return new ErrorResponse($e->getMessage());
         }
+
         try{
-            $userUuid = new UUID($request->jsonBodyField('user_uuid'));
-        }catch (HttpException|InvalidArgumentException $e) {
-            return new ErrorResponse($e->getMessage());
-        }
-        try{
-           $user = $this->usersRepository->get($userUuid);
-        }catch (UserNotFoundException $e){
+           $user = $this->authentication->user($request);
+        }catch (AuthException $e){
         return new ErrorResponse($e->getMessage());
         }
 
@@ -72,6 +70,7 @@ class CreateLike implements ActionInterface
         catch (HttpException $e) {
             return new ErrorResponse($e->getMessage());
         }
+        $this->logger->info('Start saving like');
         $this->likesRepository->save($like);
         return new SuccessfulResponse([
             'uuid' => (string)$postUuid,]);
