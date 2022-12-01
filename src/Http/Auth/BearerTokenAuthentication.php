@@ -24,18 +24,7 @@ class BearerTokenAuthentication implements TokenAuthenticationInterface
      * @throws AuthException
      */
     public function user(Request $request): User {
-        // Получаем HTTP-заголовок
-        try {
-            $header = $request->header('Authorization');
-        } catch (HttpException $e) {
-            throw new AuthException($e->getMessage());
-        }
-        // Проверяем, что заголовок имеет правильный формат
-        if (!str_starts_with($header, self::HEADER_PREFIX))
-        { throw new AuthException("Malformed token: [$header]");
-        }
-        // Отрезаем префикс Bearer
-        $token = mb_substr($header, strlen(self::HEADER_PREFIX));
+        $token = $this->getAuthTokenString($request);
         // Ищем токен в репозитории
         try {
             $authToken = $this->authTokensRepository->get($token);
@@ -49,6 +38,20 @@ class BearerTokenAuthentication implements TokenAuthenticationInterface
         // Получаем UUID пользователя из токена
         $userUuid = $authToken->userUuid();
         return $this->usersRepository->get($userUuid);
+    }
+    public function getAuthTokenString(Request $request):string {
+        // Получаем HTTP-заголовок
+        try {
+            $header = $request->header('Authorization');
+        } catch (HttpException $e) {
+            throw new AuthException($e->getMessage());
+        }
+        // Проверяем, что заголовок имеет правильный формат
+        if (!str_starts_with($header, self::HEADER_PREFIX))
+        { throw new AuthException("Malformed token: [$header]");
+        }
+        // Отрезаем префикс Bearer
+       return mb_substr($header, strlen(self::HEADER_PREFIX));
     }
 
     }
