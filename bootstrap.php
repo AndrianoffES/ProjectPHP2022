@@ -1,5 +1,9 @@
 <?php
 
+use Faker\Provider\Lorem;
+use Faker\Provider\ru_RU\Internet;
+use Faker\Provider\ru_RU\Person;
+use Faker\Provider\ru_RU\Text;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use project\App\Blog\Container\DIContainer;
@@ -17,7 +21,6 @@ use project\App\Http\Auth\AuthenticationInterface;
 use project\App\Http\Auth\BearerTokenAuthentication;
 use project\App\Http\Auth\IdentificationInterface;
 use project\App\Http\Auth\JsonBodyUserIdentification;
-use project\App\Http\Auth\JsonBodyUuidIdentification;
 use project\App\Http\Auth\PasswordAuthentication;
 use project\App\Http\Auth\PasswordAuthenticationInterface;
 use project\App\Http\Auth\TokenAuthenticationInterface;
@@ -88,5 +91,16 @@ $container->bind(
 $container->bind(
     TokenAuthenticationInterface::class,
     BearerTokenAuthentication::class);
+
+$faker = new \Faker\Generator();
+$faker->addProvider(new Person($faker));
+$faker->addProvider(new Text($faker));
+$faker->addProvider(new Internet($faker));
+$faker->addProvider(new Lorem($faker));
+
+$container->bind(
+    \Faker\Generator::class,
+    $faker );
+
 return $container;
 

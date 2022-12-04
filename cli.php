@@ -5,25 +5,24 @@ use project\App\Blog\Command\CreatePostCommand;
 
 use project\App\Blog\Commands\Arguments;
 use project\App\Blog\Commands\CreateUserCommand;
+use project\App\Blog\Commands\FakeData\PopulateDB;
+use project\App\Blog\Commands\posts\DeletePost;
+use project\App\Blog\Commands\Users\CreateUser;
+use project\App\Blog\Commands\Users\UpdateUser;
 use project\App\Blog\Exceptions\AppException;
-use project\App\Blog\Post;
-use project\App\Blog\Repositories\LikesRepository\SqlLikesRepository;
-use project\App\Blog\Repositories\PostsRepository\SqlitePostsRepository;
-use project\App\Blog\Repositories\UsersRepository\SqliteUsersRepository;
-use project\App\Blog\UUID;
-use project\App\Blog\Likes;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Application;
 
 
 $container = require __DIR__ . '/bootstrap.php';
 
-$command = $container->get(CreateUserCommand::class);
+//$command = $container->get(CreateUserCommand::class);
 // Получаем объект логгера из контейнера
 $logger = $container->get(LoggerInterface::class);
-try { $command->handle(Arguments::fromArgv($argv));
-} catch (AppException $e) {
-    $logger->error($e->getMessage(), ['exception' => $e]);
-}
+//try { $command->handle(Arguments::fromArgv($argv));
+//} catch (AppException $e) {
+//    $logger->error($e->getMessage(), ['exception' => $e]);
+//}
 //$postRepo = $container->get(SqlitePostsRepository::class);
 ////var_dump($postRepo);
 //$post = $postRepo->get(new UUID('56c80f24-7ea9-4d83-aa1d-b9b912b4f03d'));
@@ -46,3 +45,25 @@ try { $command->handle(Arguments::fromArgv($argv));
 //if($likeRepo->checkIsExistLike($post, $user))
 //$likeRepo->save($like);
 ////var_dump($showLikes);
+///
+// Создаём объект приложения
+$application = new Application();
+// Перечисляем классы команд
+$commandsClasses = [
+    CreateUser::class,
+    DeletePost::class,
+    UpdateUser::class,
+    PopulateDB::class,
+];
+foreach ($commandsClasses as $commandClass) { // Посредством контейнера
+// создаём объект команды
+    $command = $container->get($commandClass);
+    // Добавляем команду к приложению
+    $application->add($command); }
+// Запускаем приложение
+
+try { $application->run();
+} catch (AppException $e) {
+    $logger->error($e->getMessage(), ['exception' => $e]);
+}
+;

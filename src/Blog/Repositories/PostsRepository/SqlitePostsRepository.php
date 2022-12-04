@@ -3,7 +3,9 @@
 namespace project\App\Blog\Repositories\PostsRepository;
 
 use PDO;
+use PDOException;
 use project\App\Blog\Exceptions\PostNotFoundException;
+use project\App\Blog\Exceptions\PostsRepositoryException;
 use project\App\Blog\Post;
 use project\App\Blog\Repositories\UsersRepository\SqliteUsersRepository;
 use project\App\Blog\UUID;
@@ -76,11 +78,16 @@ VALUES (:uuid, :author, :title, :text)'
         );
      }
 
-     public function delete(string $postUuid): int
-     {
-            $statement = $this->connection->prepare('DELETE FROM posts WHERE uuid = ? ');
-            $statement->execute([(string)$postUuid]);
-            $this->logger->info("Post deleted:$postUuid");
-            return $statement->rowCount();
-     }
+    /**
+     * @throws PostsRepositoryException
+     */
+    public function delete(UUID $uuid): void {
+        try {
+            $statement = $this->connection->prepare(
+                'DELETE FROM posts WHERE uuid = ?'
+            );
+            $statement->execute([(string)$uuid]); } catch (PDOException $e) {
+            throw new PostsRepositoryException( $e->getMessage(), (int)$e->getCode(), $e
+            ); }
+    }
 }
